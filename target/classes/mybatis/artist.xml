@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace = "dev.mvc.artist.ArtistDAOInter">
+  <insert id="create" parameterType="ArtistVO">
+    INSERT INTO Artist(artistno, name, debut, genre, nation, seqno, type, thumbnail, fname, fupname, fsize)
+    VALUES(artist_seq.nextval, #{name}, #{debut}, #{genre}, #{nation}, #{seqno}, #{type}, #{thumbnail}, #{fname}, #{fupname}, #{fsize})
+  </insert> 
+  
+  <select id="list" resultType="ArtistVO">
+    SELECT artistno, name, debut, genre, nation, type, thumbnail, fname, fupname, fsize
+    FROM artist
+    ORDER BY artistno ASC
+  </select>
+  
+  <select id="read" resultType="ArtistVO" parameterType="int">
+    SELECT artistno, name, debut, genre, nation, likey, type, thumbnail, fname, fupname, fsize
+    FROM artist
+    WHERE artistno = #{artistno}
+  </select>
+  
+  <update id="update" parameterType="ArtistVO">
+    UPDATE artist 
+    SET name=#{name}, debut=#{debut}, seqno=#{seqno}, genre=#{genre}, nation=#{nation}, type=#{type}, thumbnail=#{thumbnail}, fname=#{fname}, fupname=#{fupname}, fsize=#{fsize}
+    WHERE artistno=#{artistno}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+    DELETE FROM artist
+    WHERE artistno=#{artistno}
+  </delete>
+  
+  
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "dev.mvc.faq.FaqDAOInter">
+
+<!-- 등록 -->
+<insert id="create" parameterType="FaqVO">
+  INSERT INTO faq(faqno, cateno, faq_categrp, faq_word, faq_title, faq_content)
+  VALUES(faq_seq.nextval, #{cateno}, #{faq_categrp}, #{faq_word}, #{faq_title}, #{faq_content})
+</insert>
+
+<!-- 내림차순 전체목록  -->
+<select id="list_all" resultType="FaqVO">
+  select faqno, cateno,faq_categrp, faq_word, faq_title, faq_content
+  from faq
+  order by faqno DESC
+</select>
+
+<!-- cateno별 목록 -->
+<select id="list" resultType="FaqVO" parameterType="int">
+  SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content
+  FROM faq 
+  WHERE cateno = #{cateno}
+  ORDER BY faqno DESC
+</select>
+
+<!-- 카테고리별 검색 목록 + 페이징 + 메인 이미지 -->
+<!--    <select id="list_by_cateno_search_paging" 
+              resultType="FaqVO" parameterType="HashMap">
+     SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content, r
+     FROM (
+                SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content, rownum as r
+                FROM (
+                          SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content
+                          FROM faq
+                          <choose>
+                            <when test="faq_word == null or faq_word == ''"> 
+                              WHERE faqno=#{faqno}
+                            </when>
+                            <otherwise>
+                              WHERE faqno=#{faqno} AND (faq_title LIKE '%' || #{faq_word} || '%' 
+                                                        OR faq_content LIKE '%' || #{faq_word} || '%' 
+                                                        OR faq_word LIKE '%' || #{faq_word} || '%')
+                            </otherwise>
+                          </choose>
+                          ORDER BY faqno DESC
+                )
+     )
+     WHERE <![CDATA[ r >= #{startNum} AND r <= #{endNum} ]]>
+   </select> 
+
+  <select id="total_count" resultType="int">
+    SELECT COUNT(*) as cnt
+    FROM contents 
+  </select> -->
+  
+<!-- 카테고리별 검색 레코드 갯수 -->
+<!-- <select id="search_count" resultType="int" parameterType="HashMap">
+  SELECT COUNT(*) as cnt
+  FROM faq
+  <choose>
+    <when test="faq_word == null or faq_word == ''">
+      WHERE faqno=#{faqno}
+    </when>
+    <otherwise>
+      WHERE faqno=#{faqno} AND (faq_title LIKE '%' || #{faq_word} || '%' 
+                                       OR faq_content LIKE '%' || #{faq_word} || '%' 
+                                       OR faq_word LIKE '%' || #{faq_word} || '%')
+       </otherwise>
+     </choose>
+   </select>     -->  
+
+<select id="read_all" resultType="FaqVO" parameterType="int">
+  SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content
+  FROM faq
+  WHERE faqno = #{faqno}
+</select>
+
+<select id="read" resultType="FaqVO" parameterType="int">
+  SELECT faqno, cateno, faq_categrp, faq_word, faq_title, faq_content
+  FROM faq
+  WHERE cateno = #{cateno}
+</select> 
+
+<!-- 수정, id: update, 입력: QnaVO, 리턴: int -->
+<update id="update" parameterType="FaqVO">
+  UPDATE faq 
+  SET faq_title= #{faq_title}, cateno=#{cateno},faq_content=#{faq_content}, faq_word=#{faq_word}
+  WHERE faqno = #{faqno}
+</update>
+
+<!-- 삭제 -->
+<delete id="delete" parameterType="FaqVO">
+  DELETE FROM faq
+  WHERE faqno=#{faqno}
+</delete>
+
+
+
+</mapper>

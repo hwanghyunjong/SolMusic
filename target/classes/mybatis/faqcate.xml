@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.fcate.FcateDAOInter">
+
+  <!-- 카테고리 등록 -->
+  <insert id="create" parameterType="FcateVO">
+    INSERT INTO fcate(cateno, name)
+    VALUES(fcate_seq.nextval, #{name})
+  </insert>
+  
+  <!-- 카테고리 전체목록 -->
+  <select id="list" resultType="FcateVO">
+    SELECT cateno,name
+    FROM fcate 
+    ORDER BY cateno DESC
+  </select>
+  
+  <!-- 카테고리 조회 -->
+  <select id="read" resultType="FcateVO" parameterType="int">
+    SELECT cateno,name
+    FROM fcate
+    WHERE cateno=#{cateno}
+  </select>
+  
+  <!-- 카테고리 수정 -->
+  <update id="update" parameterType="FcateVO">
+    UPDATE fcate
+    SET cateno=#{cateno}, name=#{name}
+    WHERE cateno = #{cateno}
+  </update>
+
+  <!-- 카테고리 삭제 -->
+  <delete id="delete" parameterType="FaqVO">
+    DELETE FROM fcate
+    WHERE cateno=#{cateno}
+  </delete>
+  
+  
+
+</mapper>

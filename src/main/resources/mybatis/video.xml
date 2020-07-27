@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.video.VideoDAOInter">
+  <insert id="create" parameterType="VideoVO">
+    INSERT INTO Video(videono, title, artist, release, youtube, songno, albumno, artistno, seqno, thumbnail, fname, fupname, fsize)
+    VALUES(video_seq.nextval, #{title}, #{artist}, #{release}, #{youtube}, #{songno}, #{albumno}, #{artistno}, #{seqno}, #{thumbnail}, #{fname}, #{fupname}, #{fsize})
+  </insert> 
+  
+  <select id="read" resultType="VideoVO" parameterType="int">
+    SELECT videono, title, artist, release, youtube, songno, albumno, artistno, seqno, thumbnail, fname, fupname, fsize
+    FROM video
+    WHERE videono = #{videono}
+  </select>
+  
+  <select id="read_songno" resultType="VideoVO" parameterType="int">
+    SELECT videono, title, artist, release, youtube, songno, albumno, artistno, seqno, thumbnail, fname, fupname, fsize
+    FROM video
+    WHERE songno = #{songno}
+  </select>
+  
+  <select id="read_albumno" resultType="VideoVO" parameterType="int">
+    SELECT videono, title, artist, release, youtube, songno, albumno, artistno, seqno, thumbnail, fname, fupname, fsize
+    FROM video
+    WHERE albumno = #{albumno}
+  </select>
+  
+  <select id="read_artistno" resultType="VideoVO" parameterType="int">
+    SELECT videono, title, artist, release, youtube, songno, albumno, artistno, seqno, thumbnail, fname, fupname, fsize
+    FROM video
+    WHERE artistno = #{artistno}
+  </select>
+</mapper>
+
+
+
+
+

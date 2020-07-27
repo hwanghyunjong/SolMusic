@@ -1,0 +1,54 @@
+.album_image_div {
+  width: 176px;
+  height: 176px;
+  margin-top: 20px;
+  float: left;
+  overflow: hidden;
+}
+
+.span_title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+.span_value_album {
+  font-size: 15px;
+  font-weight: bold;
+  padding-left: 25px;
+}
+
+/* 3. artist swiper css */
+.album_video_container_fluid{
+  padding: 50px 50px;
+  position: relative;
+  height: 100%;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.produce_album {
+  margin-top: 30px;
+  margin-left: 25px;
+}
+
+.pro_album_end {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.Spread {
+  font-size: 0.8em;
+}
+
+.up:link {
+  color: black; 
+  text-decoration: none;
+}
+
+.up:visited {
+  color: black; 
+  text-decoration: none;
+}
+
+
+

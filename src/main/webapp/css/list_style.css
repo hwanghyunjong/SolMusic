@@ -1,0 +1,15 @@
+body {
+  font-family:'Malgun Gothic';
+}
+
+.artist_thumnail {
+  width: 176px;
+  float: left;
+  text-align: center;
+  margin-left: 18px;
+  margin-top: 8px;
+  margin-bottom: 22px;
+}
+
+
+

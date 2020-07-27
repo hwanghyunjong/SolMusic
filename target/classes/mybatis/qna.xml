@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace = "dev.mvc.qna.QnaDAOInter">
+
+<!-- 등록 -->
+<!-- <insert id="create" parameterType="QnaVO">
+  INSERT INTO qna(qnano, qna_categrpname, qna_email, qna_title, qna_content, qna_fname, qna_fupname, qna_thumb, qna_fsize, qna_rdate)
+  VALUES(qna_seq.nextval, #{qna_categrpname}, #{qna_email}, #{qna_title}, #{qna_content}, #{qna_fname}, #{qna_fupname}, #{qna_thumb}, #{qna_fsize}, sysdate)
+</insert>  -->
+
+<!-- 답변형인 경우 등록, 등록후 QnaVO class의 qnano 컬럼에 PK return-->
+<insert id="create" parameterType="QnaVO">
+  <selectKey keyProperty="qnano" resultType="int" order="BEFORE">
+    SELECT qna_seq.nextval FROM dual
+  </selectKey>
+  INSERT INTO qna(qnano, userno, qna_categrpname, qna_title, qna_content, qna_fname, qna_fupname, qna_thumb, qna_fsize, qna_rdate, grpno, indent, ansnum)
+  VALUES(qna_seq.nextval, #{userno}, #{qna_categrpname}, #{qna_title},#{qna_content}, #{qna_fname}, #{qna_fupname}, #{qna_thumb}, #{qna_fsize}, sysdate, (SELECT NVL(MAX(grpno), 0) + 1 FROM qna),0,0)
+</insert>
+
+<!-- 내림차순 전체목록  -->
+<select id="list" resultType="QnaVO">
+  select qnano, userno, qna_state, qna_categrpname, qna_email, qna_title, qna_rdate
+  from qna
+  order by qnano DESC
+</select>
+
+<select id="list_users" resultType="Qna_user_VO">
+  select q.qnano as q_qnano, q.userno as q_userno, q.qna_seqno as q_qna_seqno, q.qna_categrpname as q_qna_categrpname, q.qna_title as q_qna_title, q.qna_content as q_qna_content, q.qna_rdate as q_qna_rdate, q.qna_state as q_qna_state, q.qna_fname as q_qna_fname,
+          u.userno as u_userno, u.userID as u_userID
+  from qna q, users u
+  WHERE q.userno = u.userno
+  order by qnano DESC
+</select>
+
+<!-- 조회, id: read, 입력: qnano, 리턴: QnaVO -->
+<select id="read" resultType="QnaVO" parameterType="int">
+  select qnano, userno, qna_categrpname, qna_email, qna_title, qna_content, qna_rdate, qna_fname, qna_fupname, qna_thumb, qna_fsize,grpno, indent, ansnum
+  from qna
+  where qnano = #{qnano}
+</select>
+
+<!-- 수정, id: update, 입력: QnaVO, 리턴: int -->
+<update id="update" parameterType="QnaVO">
+  update qna
+  set qna_categrpname=#{qna_categrpname}, qna_title=#{qna_title}, qna_content=#{qna_content}
+  WHERE qnano=#{qnano}
+</update>
+
+<!-- 삭제, id=delete, 입력: PK, 리턴: 삭제된 갯수 int  parameterType=입력받는 타입-->
+<delete id="delete" parameterType="int">
+  DELETE FROM qna
+  WHERE qnano=#{qnano}
+</delete>  
+
+<select id="total_count" resultType="int">
+    SELECT COUNT(*) as cnt
+    FROM qna 
+  </select>
+  
+<!-- 카테고리별 검색 레코드 갯수 -->
+<select id="search_count" resultType="int" parameterType="HashMap">
+  SELECT COUNT(*) as cnt
+  FROM qna
+  <choose>
+    <when test="word == null or word == ''">
+    </when>
+    <otherwise>
+       WHERE qna_title LIKE '%' || #{word} || '%' OR qna_content LIKE '%' || #{word} || '%'                                     
+    </otherwise>
+  </choose>
+</select>       
+
+<!-- 검색 목록 + 페이징-->
+<!-- <select id="list_by_search_paging" resultType="QnaVO" parameterType="HashMap">
+     SELECT qnano, qna_state, qna_categrpname, qna_email, qna_title, qna_content, word, qna_rdate,r
+     FROM (
+                SELECT qnano, qna_state, qna_categrpname, qna_email, qna_title, qna_content, word, qna_rdate, rownum as r
+                FROM (
+                          SELECT qnano, qna_state, qna_categrpname, qna_email, qna_title, qna_content, word, qna_rdate
+                          FROM qna
+                          <choose>
+                            <when test="word == null or word == ''"> 검색하지 않는 경우 
+                            </when>
+                            <otherwise>
+                               WHERE qna_title LIKE '%' || #{word} || '%' OR qna_content LIKE '%' || #{word} || '%'
+                            </otherwise>
+                          </choose>
+                          ORDER BY qnano DESC
+                )
+     )
+     WHERE <![CDATA[ r >= #{startNum} AND r <= #{endNum} ]]>                            
+   </select> -->
+
+ <!-- 카테고리별 검색 목록 + 페이징 + 메인 이미지 + 답변형 -->
+   <select id="list_by_search_paging" resultType="QnaVO" parameterType="HashMap">
+     SELECT qnano, userno, qna_state, qna_categrpname, qna_title, qna_content, word, qna_rdate,
+               grpno, indent, ansnum, r
+     FROM (
+                SELECT qnano, userno, qna_state, qna_categrpname, qna_title, qna_content, word, qna_rdate,
+                grpno, indent, ansnum, rownum as r
+                FROM (
+                          SELECT qnano, userno, qna_state, qna_categrpname, qna_title, qna_content, word, qna_rdate, grpno, indent, ansnum
+                          FROM qna
+                          <choose>
+                            <when test="word == null or word == ''"> <!--검색하지 않는 경우  -->
+                               WHERE userno=#{userno}
+                            </when>
+                            <otherwise>
+                               WHERE qna_title LIKE '%' || #{word} || '%' OR qna_content LIKE '%' || #{word} || '%' AND userno=#{userno}
+                            </otherwise>
+                          </choose>
+                          ORDER BY grpno DESC, ansnum ASC
+                )
+     )
+     WHERE <![CDATA[ r >= #{startNum} AND r <= #{endNum} ]]>                            
+   </select>
+   
+<!-- 답변을 붙이려는 부모글의 자식들을 모두 답변 순서 1 증가 -->
+<update id="increaseAnsnum" parameterType="HashMap">
+  UPDATE qna
+  SET ansnum = ansnum + 1
+  WHERE grpno = #{grpno} AND ansnum > #{ansnum}  
+</update>
+
+<!-- 답변 -->
+<insert id="reply" parameterType="QnaVO">
+  <selectKey keyProperty="qnano" resultType="int" order="BEFORE">
+    SELECT qna_seq.nextval FROM dual
+  </selectKey>
+    INSERT INTO qna(qnano, qna_categrpname, qna_title, qna_content, qna_email, qna_rdate, grpno, indent, ansnum)  
+    VALUES(#{qnano}, #{qna_categrpname}, #{qna_title}, #{qna_content}, #{qna_email}, sysdate, #{grpno}, #{indent}, #{ansnum})
+</insert>
+  
+<update id="increaseReplycnt" parameterType="int">
+   UPDATE qna
+   SET replycnt = replycnt + 1
+   WHERE qnano = #{qnano}
+</update>
+
+<update id="decreaseReplycnt" parameterType="int">
+   UPDATE qna
+   SET replycnt = replycnt + 1
+   WHERE qnano = #{qnano}
+</update>
+  
+</mapper>
